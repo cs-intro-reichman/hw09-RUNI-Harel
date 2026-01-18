@@ -44,9 +44,13 @@ public class List {
         // Your code goes here
         Node current=first;
         String ret="(";
-        while(current!=null){
-            ret = ret + current.cp.toString() + " ";
-            current=current.next;
+        while (current != null) {
+            ret = ret + current.cp.toString();
+            // Only add a space if this isn't the last node
+            if (current.next != null) {
+                ret = ret + " ";
+            }
+            current = current.next;
         }
         ret += ")";
         return ret;
