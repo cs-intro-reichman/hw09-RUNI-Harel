@@ -43,11 +43,12 @@ public class List {
     public String toString() {
         // Your code goes here
         Node current=first;
-        String ret="";
+        String ret="(";
         while(current!=null){
             ret = ret + current.cp.toString() + " ";
             current=current.next;
         }
+        ret += ")";
         return ret;
     }
 
