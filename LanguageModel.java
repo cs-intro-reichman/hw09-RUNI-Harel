@@ -34,19 +34,71 @@ public class LanguageModel {
     /** Builds a language model from the text in the given file (the corpus). */
 	public void train(String fileName) {
 		// Your code goes here
+        
+        String window = "";
+        char c;
+        // Use in class
+        In in = new In(fileName);
+
+        // read chars
+        for (int i = 0; i < windowLength; i++) {
+            if (!in.isEmpty()) {
+                window += in.readChar();
+            }
+        }
+
+        // Rest of text, 1char at a time
+        while (!in.isEmpty()) {
+            c = in.readChar();
+            List probs = CharDataMap.get(window);
+            if (probs == null) {
+                probs = new List();
+                CharDataMap.put(window, probs);
+            }
+            probs.update(c);
+            window = window.substring(1) + c;
+        }
+
+        // Use calculateProbabilities
+        for (List list : CharDataMap.values()) {
+            calculateProbabilities(list);
+        }
 	}
 
-    // Computes and sets the probabilities (p and cp fields) of all the
-	// characters in the given list. */
+    // set probabilities
 	void calculateProbabilities(List probs) {				
 		// Your code goes here
+        int totCnt=0;
+
+        //total number of chars
+        ListIterator itr = probs.listIterator(0);
+            while (itr.hasNext()) {
+                CharData current = itr.next();
+                totCnt += current.count;
+            }
+
+        itr = probs.listIterator(0);
+        double cumulativeProb = 0.0;
+
+        while (itr.hasNext()) {
+        CharData current = itr.next();
+        current.p = (double) current.count / totCnt; //moneh helkey mehaneh
+        cumulativeProb += current.p;
+        current.cp = cumulativeProb;
+        }
+
 	}
 
     // Returns a random character from the given probabilities list.
-	char getRandomChar(List probs) {
-		// Your code goes here
-		return ' ';
-	}
+    public char getRandomChar(List probs) {
+        double rnd = randomGenerator.nextDouble();
+            for (int i = 0; i < probs.getSize(); i++) {
+                if (probs.get(i).cp > rnd) {
+                    return probs.get(i).chr;
+                }
+            }
+            return probs.get(probs.getSize() - 1).chr;
+    }
 
     /**
 	 * Generates a random text, based on the probabilities that were learned during training. 
@@ -55,10 +107,32 @@ public class LanguageModel {
 	 * @param numberOfLetters - the size of text to generate
 	 * @return the generated text
 	 */
-	public String generate(String initialText, int textLength) {
-		// Your code goes here
-        return "";
-	}
+	    public String generate(String initialText, int textLength) {
+            int targetLength = initialText.length() + textLength;
+
+            if (initialText.length() >= targetLength) {
+                return initialText.substring(0, targetLength);
+            }
+            if (initialText.length() < windowLength) {
+                return initialText;
+            }
+
+            StringBuilder generated = new StringBuilder(initialText);
+            String window = initialText.substring(initialText.length() - windowLength);
+
+            while (generated.length() < targetLength) {
+                List probs = CharDataMap.get(window);
+                if (probs == null) {
+                    break;
+                }
+
+                char nextChar = getRandomChar(probs);
+                generated.append(nextChar);
+                window = generated.substring(generated.length() - windowLength);
+            }
+
+            return generated.toString();
+        }
 
     /** Returns a string representing the map of this language model. */
 	public String toString() {
@@ -72,5 +146,25 @@ public class LanguageModel {
 
     public static void main(String[] args) {
 		// Your code goes here
+
+        int windowLength = Integer.parseInt(args[0]);
+        String initialText = args[1];
+        int generatedTextLength = Integer.parseInt(args[2]);
+        boolean randomGeneration = args[3].equals("random");
+        String fileName = args[4];
+
+        // creates languge model
+        LanguageModel lm;
+        if (randomGeneration) {
+            lm = new LanguageModel(windowLength);
+        } else {
+            lm = new LanguageModel(windowLength, 20);
+        }
+
+        //model traning
+        lm.train(fileName);
+
+        //generate text and print it
+        System.out.println(lm.generate(initialText, generatedTextLength));
     }
 }

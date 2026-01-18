@@ -31,19 +31,45 @@ public class List {
     /** GIVE Adds a CharData object with the given character to the beginning of this list. */
     public void addFirst(char chr) {
         // Your code goes here
+        Node linkTo=first;
+        CharData toAdd= new CharData(chr);
+        Node newNode= new Node(toAdd, linkTo);
+        
+        first=newNode;
+        size++;
     }
     
     /** GIVE Textual representation of this list. */
     public String toString() {
         // Your code goes here
-        return "";
+        Node current=first;
+        String ret="(";
+        while (current != null) {
+            ret = ret + current.cp.toString();
+            // Only add a space if this isn't the last node
+            if (current.next != null) {
+                ret = ret + " ";
+            }
+            current = current.next;
+        }
+        ret += ")";
+        return ret;
     }
 
     /** Returns the index of the first CharData object in this list
      *  that has the same chr value as the given char,
      *  or -1 if there is no such object in this list. */
     public int indexOf(char chr) {
-        // Your code goes here
+        Node current=first;
+        int position=0;
+        while(current!=null){
+            //current.cp.equals(chr)
+            if(current.cp.chr == chr){
+                return position;
+            }
+            position++;
+            current=current.next;
+        }
         return -1;
     }
 
@@ -52,6 +78,21 @@ public class List {
      *  given chr to the beginning of this list. */
     public void update(char chr) {
         // Your code goes here
+        int pos=indexOf(chr);
+        if(pos==-1){
+            addFirst(chr);
+            return;
+        }
+        Node current=first;
+        int cnt=0;
+        while(current!=null){
+            if(cnt==pos){
+                current.cp.count++;
+                return; // or break;
+            }
+            cnt++;
+            current=current.next;
+        }
     }
 
     /** GIVE If the given character exists in one of the CharData objects
@@ -59,6 +100,22 @@ public class List {
      *  true. Otherwise, returns false. */
     public boolean remove(char chr) {
         // Your code goes here
+        
+        if (first.cp.chr == chr) {
+            first = first.next;
+            size--;
+            return true;
+        }
+
+        Node current=first;
+        while(current.next!=null){
+            if(current.next.cp.chr == chr){
+                current.next=current.next.next;
+                size--;
+                return true;
+            }
+            current=current.next;
+        }
         return false;
     }
 
@@ -67,6 +124,18 @@ public class List {
      *  throws an IndexOutOfBoundsException. */
     public CharData get(int index) {
         // Your code goes here
+        if (index<0 || index>size) {
+            throw new IndexOutOfBoundsException();
+        }
+        Node current=first;
+        int cnt=0;
+        while(current!=null){
+            if(cnt==index){
+                return current.cp;
+            }
+            cnt++;
+            current=current.next;
+        }
         return null;
     }
 
