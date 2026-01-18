@@ -98,7 +98,7 @@ public char getRandomChar(List probs) {
         
         while (itr.hasNext()) {
             current = itr.next();
-            if (current.cp > rnd) {
+            if (current.cp >= rnd) {
                 return current.chr;
             }
         }
