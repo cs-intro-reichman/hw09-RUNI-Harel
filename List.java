@@ -46,8 +46,8 @@ public class List {
         String ret="";
         while(current!=null){
             ret=ret+current.cp.toString();
+            current=current.next;
         }
-        current=current.next;
         return ret;
     }
 
@@ -76,7 +76,6 @@ public class List {
         int pos=indexOf(chr);
         if(pos==-1){
             addFirst(chr);
-            System.out.println("here");
             return;
         }
         Node current=first;

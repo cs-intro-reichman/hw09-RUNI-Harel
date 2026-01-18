@@ -35,7 +35,7 @@ public class LanguageModel {
 	public void train(String fileName) {
 		// Your code goes here
         
-        String partWord = "";
+        String window = "";
         char c;
         // Use in class
         In in = new In(fileName);
@@ -43,20 +43,20 @@ public class LanguageModel {
         // read chars
         for (int i = 0; i < windowLength; i++) {
             if (!in.isEmpty()) {
-                partWord += in.readChar();
+                window += in.readChar();
             }
         }
 
         // Rest of text, 1char at a time
         while (!in.isEmpty()) {
             c = in.readChar();
-            List probs = CharDataMap.get(partWord);
+            List probs = CharDataMap.get(window);
             if (probs == null) {
                 probs = new List();
-                CharDataMap.put(partWord, probs);
+                CharDataMap.put(window, probs);
             }
             probs.update(c);
-            partWord = partWord.substring(1) + c;
+            window = window.substring(1) + c;
         }
 
         // Use calculateProbabilities
