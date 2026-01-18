@@ -85,7 +85,7 @@ public class LanguageModel {
         current.p = (double) current.count / totCnt; //moneh helkey mehaneh
         cumulativeProb += current.p;
         current.cp = cumulativeProb;
-    }
+        }
 
 	}
 
@@ -96,14 +96,15 @@ public class LanguageModel {
         //int size = probs.getSize();
 
         ListIterator itr = probs.listIterator(0);
+        CharData current = null;
 
         while (itr.hasNext()) {
-            CharData current = itr.next();
+            current = itr.next();
             if (current.cp > rnd) {
                 return current.chr;
             }
         }
-		return ' ';
+		return current.chr;
 	}
 
     /**
